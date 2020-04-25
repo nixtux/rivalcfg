@@ -70,6 +70,38 @@ rival700 = {
             "default": "#FF1800"
         },
 
+        "send_haptic": {
+            "description": "Sends haptic feedback",
+            "cli": ["-f", "--haptic-feedback"],
+            "command": [0x59, 0x01, 0x00],
+            "value_type": "choice",
+            "choices": {
+                "strong":              0b000001,
+                "soft":                0b000010,
+                "light":               0b000011,
+                "sharp":               0b000100,
+                "bump":                0b000111,
+                "ping":                0b001000,
+                "lightbump":           0b001001,
+                "double":              0b001010,
+                "quicktriple":         0b001100,
+                "longbuzz":            0b001111,
+                "ring":                0b010000,
+                "quickring":           0b010001,
+                "tick":                0b011000,
+                "quickdouble":         0b011011,
+                "lighttick":           0b011010,
+                "quicksoftdouble":     0b100000,
+                "buzz":                0b101111,
+                "lightbuzz":           0b110011,
+                "strongpulse":         0b110100,
+                "pulse":               0b110101,
+                "softpulse":           0b110111,
+                "longlightbuzz":       0b111111,
+            },
+            "default": "strong",
+        },
+
         "save": {
             "description": "Save the configuration to the mouse memory",
             "cli": None,
