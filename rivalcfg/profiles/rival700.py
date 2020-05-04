@@ -70,6 +70,14 @@ rival700 = {
             "default": "#FF1800"
         },
 
+        "send_oled_frame": {
+            "description": "Set image to oled screen",
+            "cli": None,
+            "command": [0x50, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_FEATURE,  # wValue = 0x0300
+            "value_type": "frame",
+        },
+
         "save": {
             "description": "Save the configuration to the mouse memory",
             "cli": None,

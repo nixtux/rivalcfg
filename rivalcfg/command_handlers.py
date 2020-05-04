@@ -172,3 +172,19 @@ def hotsbtnmap_handler(command, value):
         raise ValueError("Please provide 8 keys to be mapped.")
     value = _transform(command, value)
     return helpers.merge_bytes(command["command"], *olist)
+
+
+def frame_handler(command, frame):
+    """Returns command bytes for oled data.
+
+    Arguments:
+    command -- the command description dict
+    data -- 576 bytes of data
+    """
+    if len(frame) != 576:
+        raise ValueError("Please provide 576 bytes data.")
+    for v in range(len(frame)):
+        value = frame[v]
+        if value < 0 or value > 255:
+            raise ValueError("Out of Range.")
+    return helpers.merge_bytes(command["command"], *frame)

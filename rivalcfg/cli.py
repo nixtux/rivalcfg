@@ -196,6 +196,10 @@ def _add_mouse_options(parser, profile):
     parser.add_option_group(group)
 
 
+def _add_frame_option(group, command_name, command):
+    description = command["description"]
+
+
 def generate_cli(profile=None):
     parser = OptionParser(
             "Usage: rivalcfg [options]",
