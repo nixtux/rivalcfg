@@ -77,13 +77,22 @@ rival700 = {
             "default": "#FF1800"
         },
 
-        "set_wheel_colorshift": {
+        "set_logo_colorshift": {
             "description": "test",
-            "cli": ["-o", "--wheel-o"],
+            "cli": ["-o", "--logo-colorshift"],
             "command": [0x05, 0x00],
             "report_type": usbhid.HID_REPORT_TYPE_FEATURE,  # wValue = 0x0300
             "value_type": "rival700_colorshift",
             "led_id": 0x0,
+        },
+
+        "set_wheel_colorshift": {
+            "description": "test",
+            "cli": ["-O", "--wheel-colorshift"],
+            "command": [0x05, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_FEATURE,  # wValue = 0x0300
+            "value_type": "rival700_colorshift",
+            "led_id": 0x1,
         },
 
         "save": {
