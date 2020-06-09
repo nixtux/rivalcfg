@@ -185,7 +185,7 @@ def _add_rival700_colorshift_option(group, command_name, command):
             callback=_check_rival700_colorshift,
             metavar=_command_name_to_metavar(command_name)
             )
-    
+
 
 def _add_range_option(group, command_name, command):
     description = "%s (from %i to %i in increments of %i, default: %i)" % (
