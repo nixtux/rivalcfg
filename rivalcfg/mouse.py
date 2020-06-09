@@ -82,6 +82,14 @@ class Mouse:
             else:
                 raise Exception("rgbuniversal value type was specified, but the format is not defined for %s" % self.profile["name"]) # noqa
 
+        if command["value_type"] == "rival700_colorshift":
+            if "rival700_colorshift_format" in self.profile:
+                debug.log("rival700_colorshift_format found")
+                command["rival700_colorshift_format"] = \
+                    self.profile["rival700_colorshift_format"]
+            else:
+                raise Exception("rival700_colorshift_format value type was specified, but the format is not defined for %s" % self.profile["name"]) # noqa
+
         if not hasattr(command_handlers, handler):
             raise Exception("There is not handler for the '%s' value type" % command["value_type"])  # noqa
 

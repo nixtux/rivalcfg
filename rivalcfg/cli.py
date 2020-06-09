@@ -72,6 +72,36 @@ def _check_rgbuniversal(option, opt_str, value, parser):
         raise OptionValueError("option %s: invalid number of values" % (opt_str))  # noqa
 
 
+def _check_rival700_colorshift(option, opt_str, value, parser):
+    """OptionParser callback to check and process inputs for rgbuniversal.
+    Accepted format:
+        -x time
+        -x rgb color
+        -x percentage (value from 0-100)
+    """
+    args = value.split(",")
+    if len(args) >= 3:
+        time = args[0]
+        if not (time.isdigit() or time.lower() == "x"):
+            raise OptionValueError("option %s: invalid time: '%s'" % (opt_str, time))  # noqa
+
+        colors = args[1::2]
+        for color in colors:
+            if not helpers.is_color(color):
+                raise OptionValueError("option %s: invalid color: '%s'" % (opt_str, color))  # noqa
+
+        positions = args[2::2]
+        for position in positions:
+            position = int(position)
+            if (position <= 0 or position > 100):
+                raise OptionValueError("option %s: invalid color position: '%s'" % (opt_str, position))  # noqa
+
+        setattr(parser.values, option.dest,
+                (colors, positions, time))
+    else:
+        raise OptionValueError("option %s: invalid number of values" % (opt_str))  # noqa
+
+
 def _add_choice_option(group, command_name, command):
     description = "%s (values: %s, default: %s)" % (
             command["description"],
@@ -138,6 +168,24 @@ def _add_rgbuniversal_option(group, command_name, command):
             metavar=_command_name_to_metavar(command_name)
             )
 
+
+def _add_rival700_colorshift_option(group, command_name, command):
+    description = (command["description"] +
+                   " (e.g. red, #ff0000, ff0000, #f00, f00). "
+                   "If more than one value is specified, "
+                   "a color shifting effect is set "
+                   "(e.g. x,x,red,0,green,54,blue,54) "
+                   "syntax: time(ms),trigger_mask,color1,pos1,...,colorn,posn")
+    group.add_option(
+            *command["cli"],
+            dest=command_name,
+            help=description,
+            type="string",
+            action="callback",
+            callback=_check_rival700_colorshift,
+            metavar=_command_name_to_metavar(command_name)
+            )
+    
 
 def _add_range_option(group, command_name, command):
     description = "%s (from %i to %i in increments of %i, default: %i)" % (

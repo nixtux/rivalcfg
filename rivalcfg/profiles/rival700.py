@@ -8,6 +8,14 @@ rival700 = {
     "product_id": 0x1700,
     "interface_number": 0,
 
+    "rival700_colorshift_format": {
+        "header_len": 139,  # Number of bytes in header excluding command bytes
+        "led_id": [0],      # Index(es) of LED ID (unsure why rival600 have 2)
+        "speed": 160,       # Index of the colorshift speed field
+        "speed_len": 2,     # How many bytes the speed field takes up
+        "data_pos": 12,    # Index of the color count field
+    },
+
     "commands": {
 
         "set_sensitivity1": {
@@ -68,6 +76,15 @@ rival700 = {
             "report_type": usbhid.HID_REPORT_TYPE_FEATURE,  # wValue = 0x0300
             "value_type": "rgbcolor",
             "default": "#FF1800"
+        },
+
+        "set_wheel_colorshift": {
+            "description": "test",
+            "cli": ["-o", "--wheel-o"] ,
+            "command": [0x05, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_FEATURE,  # wValue = 0x0300
+            "value_type": "rival700_colorshift",
+            "led_id": 0x0,
         },
 
         "save": {

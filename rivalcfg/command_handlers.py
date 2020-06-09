@@ -1,4 +1,5 @@
 from . import helpers
+from math import floor
 
 
 def _transform(command, *args):
@@ -126,6 +127,104 @@ def rgbuniversal_handler(command, colors, positions, speed, triggers):
     data = helpers.merge_bytes(data, colors[0], remaining)
 
     return helpers.merge_bytes(command["command"], header, data)
+
+
+def rival700_colorshift_handler(command, colors, positions, speed):
+    """ Returns command bytes from RGB color commands.
+    It crafts packets on a per mouse basis, by reading the format given
+    in "rgbuniversal_format" in the command dict. If a single color is given,
+    it creates a steady color command. If multiple colors are given, it creates
+    a colorshift command. If triggermask is nonzero, a reactive command is
+    created.
+
+    Arguments:
+    command -- the command description dict
+    colors -- the colors as an array of string (color name or hexadecimal RGB)
+    positions -- what percentage of color position
+    speed -- the colorshift cycle time as a string (milliseconds)
+    """
+    colors = list(map(helpers.color_string_to_rgb, colors))
+    print(colors,len(colors))
+    positions = list(positions)
+    speed = 5000 if speed.lower() == "x" else int(speed, 10)
+
+    rgb_format = command["rival700_colorshift_format"]
+    header = helpers.merge_bytes(command["led_id"], [0x1d, 0x01, 0x02, 0x31, 0x51, 0xff, 0xc8, 0x00])
+    #header = helpers.merge_bytes(command["led_id"], [0xff, 0x3c, 0x00, 0xff, 0x32, 0xc8, 0xc8, 0x00])
+    
+    # 7 bytes in a stage
+    stage = []
+    r = colors[0][0]
+    g = colors[0][1]
+    b = colors[0][2]
+    last_pos = 0
+
+    for i in range(1, len(colors)):
+        stage.append(i-1)
+        stage.append(00)
+
+        pos = int(positions[i]) - last_pos
+        time = int(speed / 100 * int(pos))
+        last_pos = pos
+
+        r_diff = colors[i][0] - r
+        g_diff = colors[i][1] - g
+        b_diff = colors[i][2] - b
+
+        r_ramp = round(r_diff / time * 8)
+        g_ramp = round(g_diff / time * 8)
+        b_ramp = round(b_diff / time * 8)
+
+        print("Color diff is ", r_diff, r_ramp, g_diff, g_ramp, b_diff, b_ramp)
+
+        print("color adjust ", r_diff / (time/10), r_diff / (time/10) * r_ramp)
+        print("color adjust ", g_diff / (time/10), g_diff / (time/10) * g_ramp)
+        print("color adjust ", b_diff / (time/10), b_diff / (time/10) * b_ramp)
+
+        r = colors[i][0]
+        g = colors[i][1]
+        b = colors[i][2]
+
+        stage = helpers.merge_bytes(stage, r_ramp & 255)
+        stage = helpers.merge_bytes(stage, g_ramp & 255)
+        stage = helpers.merge_bytes(stage, b_ramp & 255)
+
+        stage.append(00)
+        
+        #print("pos percentage ", positions[i], " at time ", time, "of" , speed)
+
+        time = helpers.uint_to_little_endian_bytearray(time, 2)
+        stage = helpers.merge_bytes(stage, time)
+
+    #for i in range(len(stage)):
+        #print(hex(stage[i]))
+
+    header = helpers.merge_bytes(header, stage)
+    padding = [0] * (rgb_format["header_len"] - len(header))
+    header = helpers.merge_bytes(header, padding)
+
+    speed_pos, speed_len = rgb_format["speed"], rgb_format["speed_len"]
+    speed = helpers.uint_to_little_endian_bytearray(speed, speed_len)
+
+    data = colors[0]
+
+    for color, pos in zip(colors, positions):
+        data = helpers.merge_bytes(data, color, pos)
+
+    start_color = colors[0]
+    split_color = []
+    for i in range(len(start_color)):
+        high, low = helpers.bytes_to_high_low_nibbles(start_color[i])
+        left_byte = helpers.nibbles_to_byte(low, 00)
+        right_byte = high & 0x0F
+        split_color.append(left_byte) 
+        split_color.append(right_byte)
+
+
+    end_suffix = [0xff, 0x00, 0xdc, 0x05, 0x8a, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x03, 0x00]
+    suffix = helpers.merge_bytes(split_color, end_suffix, speed)
+
+    return helpers.merge_bytes(command["command"], header, suffix)
 
 
 def range_handler(command, value):
