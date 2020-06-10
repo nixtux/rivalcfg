@@ -176,18 +176,14 @@ def rival700_colorshift_handler(command, colors, positions, speed):
         index = 0
         for rgb in colors[i]:
             diff = rgb - oldcolor[index]
-            ramp = round(diff / time * 8)
+            ramp = round(diff / time * 16)
             oldcolor[index] = rgb
             stage = helpers.merge_bytes(stage, ramp & 255)
             index = index + 1
             # print("rgb", rgb, diff, ramp, ramp & 255, hex(ramp & 255))
         stage.append(00)
-        # print("pos percentage ", positions[i], " at ", time, "of", speed)
         time = helpers.uint_to_little_endian_bytearray(time, 2)
         stage = helpers.merge_bytes(stage, time)
-
-    # for i in range(len(stage)):
-        # print(hex(stage[i]))
 
     header = helpers.merge_bytes(header, stage)
     """ Pad the rest of the command so we can place start color, end suffix and
