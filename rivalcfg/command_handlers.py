@@ -158,11 +158,13 @@ def rival700_colorshift_handler(command, colors, positions, speed):
     """ 7 bytes in a stage, first byte is index, 2nd is padding,
     3-5 is signed bytes depecting color increase/decrease, 6 bytes
     is padding, the 7-8 is time since last stage in ms
+    Process colors and positions in shift array, appending each stage
+    to the previous one
     """
+
     stage = []
     last_pos = 0
     oldcolor = [0, 0, 0]
-
     for i in range(1, len(colors)):
         stage.append(i - 1)
         stage.append(00)
