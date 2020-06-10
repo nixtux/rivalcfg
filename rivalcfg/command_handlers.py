@@ -176,7 +176,7 @@ def rival700_colorshift_handler(command, colors, positions, speed):
         index = 0
         for rgb in colors[i]:
             diff = rgb - oldcolor[index]
-            ramp = round(diff / time * 16)
+            ramp = int(diff / time * 16)
             oldcolor[index] = rgb
             stage = helpers.merge_bytes(stage, ramp & 255)
             index = index + 1
