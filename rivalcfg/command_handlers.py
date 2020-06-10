@@ -157,6 +157,7 @@ def rival700_colorshift_handler(command, colors, positions, speed):
     g = colors[0][1]
     b = colors[0][2]
     last_pos = 0
+    oldcolor = [0,0,0]
 
     for i in range(1, len(colors)):
         stage.append(i-1)
@@ -166,32 +167,17 @@ def rival700_colorshift_handler(command, colors, positions, speed):
         time = int(speed / 100 * int(pos))
         last_pos = pos
 
-        r_diff = colors[i][0] - r
-        g_diff = colors[i][1] - g
-        b_diff = colors[i][2] - b
-
-        r_ramp = round(r_diff / time * 8)
-        g_ramp = round(g_diff / time * 8)
-        b_ramp = round(b_diff / time * 8)
-
-        print("Color diff is ", r_diff, r_ramp, g_diff, g_ramp, b_diff, b_ramp)
-
-        print("color adjust ", r_diff / (time/10), r_diff / (time/10) * r_ramp)
-        print("color adjust ", g_diff / (time/10), g_diff / (time/10) * g_ramp)
-        print("color adjust ", b_diff / (time/10), b_diff / (time/10) * b_ramp)
-
-        r = colors[i][0]
-        g = colors[i][1]
-        b = colors[i][2]
-
-        stage = helpers.merge_bytes(stage, r_ramp & 255)
-        stage = helpers.merge_bytes(stage, g_ramp & 255)
-        stage = helpers.merge_bytes(stage, b_ramp & 255)
-
+        index = 0
+        for rgb in colors[i]:
+            diff = rgb - oldcolor[index]
+            ramp = round(diff / time * 8)
+            oldcolor[index] = rgb
+            stage = helpers.merge_bytes(stage, ramp & 255)
+            index = index + 1
+            # print("rgb", rgb, diff, ramp, ramp & 255, hex(ramp & 255))
         stage.append(00)
-
+       
         # print("pos percentage ", positions[i], " at ", time, "of", speed)
-
         time = helpers.uint_to_little_endian_bytearray(time, 2)
         stage = helpers.merge_bytes(stage, time)
 
