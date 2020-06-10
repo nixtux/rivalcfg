@@ -82,7 +82,7 @@ def _check_rival700_colorshift(option, opt_str, value, parser):
     args = value.split(",")
     if len(args) >= 3:
         time = args[0]
-        if not (time.isdigit() or time.lower() == "x"):
+        if not time.isdigit():
             raise OptionValueError("option %s: invalid time: '%s'" % (opt_str, time))  # noqa
 
         colors = args[1::2]
@@ -93,7 +93,7 @@ def _check_rival700_colorshift(option, opt_str, value, parser):
         positions = args[2::2]
         for position in positions:
             position = int(position)
-            if (position <= 0 or position > 100):
+            if (position < 0 or position > 100):
                 raise OptionValueError("option %s: invalid color position: '%s'" % (opt_str, position))  # noqa
 
         setattr(parser.values, option.dest,
