@@ -144,23 +144,27 @@ def rival700_colorshift_handler(command, colors, positions, speed):
     colors = list(map(helpers.color_string_to_rgb, colors))
     # print(colors, len(colors))
     positions = list(positions)
-    speed = 5000 if speed.lower() == "x" else int(speed, 10)
+    speed = int(speed, 10)
 
     rgb_format = command["rival700_colorshift_format"]
     start_header = [0x1d, 0x01, 0x02, 0x31, 0x51, 0xff, 0xc8, 0x00]
     #              [0xff, 0x3c, 0x00, 0xff, 0x32, 0xc8, 0xc8, 0x00]
     header = helpers.merge_bytes(command["led_id"], start_header)
 
-    # 7 bytes in a stage
+    # Append colors and position for color shift
+    colors.append(colors[0])
+    positions.append(100)
+
+    """ 7 bytes in a stage, first byte is index, 2nd is padding,
+    3-5 is signed bytes depecting color increase/decrease, 6 bytes
+    is padding, the 7-8 is time since last stage in ms
+    """
     stage = []
-    r = colors[0][0]
-    g = colors[0][1]
-    b = colors[0][2]
     last_pos = 0
-    oldcolor = [0,0,0]
+    oldcolor = [0, 0, 0]
 
     for i in range(1, len(colors)):
-        stage.append(i-1)
+        stage.append(i - 1)
         stage.append(00)
 
         pos = int(positions[i]) - last_pos
@@ -176,7 +180,6 @@ def rival700_colorshift_handler(command, colors, positions, speed):
             index = index + 1
             # print("rgb", rgb, diff, ramp, ramp & 255, hex(ramp & 255))
         stage.append(00)
-       
         # print("pos percentage ", positions[i], " at ", time, "of", speed)
         time = helpers.uint_to_little_endian_bytearray(time, 2)
         stage = helpers.merge_bytes(stage, time)
@@ -185,6 +188,9 @@ def rival700_colorshift_handler(command, colors, positions, speed):
         # print(hex(stage[i]))
 
     header = helpers.merge_bytes(header, stage)
+    """ Pad the rest of the command so we can place start color, end suffix and
+    cycle time at the correct location in the command
+    """
     padding = [0] * (rgb_format["header_len"] - len(header))
     header = helpers.merge_bytes(header, padding)
 
@@ -196,6 +202,7 @@ def rival700_colorshift_handler(command, colors, positions, speed):
     for color, pos in zip(colors, positions):
         data = helpers.merge_bytes(data, color, pos)
 
+    # Split start color into high low nibbles
     start_color = colors[0]
     split_color = []
     for i in range(len(start_color)):
