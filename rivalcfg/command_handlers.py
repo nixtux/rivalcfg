@@ -152,9 +152,18 @@ def rival700_colorshift_handler(command, colors, positions, speed):
     header = helpers.merge_bytes(command["led_id"], start_header)
 
     start_color = colors[0]
-    # Append colors and position for color shift
+
+    """ Sse allowes a maximun of 14 colorshift patterns but there is room in the
+    command for up to 16 colorshift patterns.
+    """
+    maxcolorshift = 16
+    if len(colors) > maxcolorshift:
+        raise ValueError("Only a maximum of %i colorshift patterns are allowed" % (maxcolorshift)) # noqa
+
+    # Append start color and position to color/position arrays
     colors.append(start_color)
     positions.append(100)
+    print(len(colors))
 
     """ 7 bytes in a stage, first byte is index, 2nd is padding,
     3-5 is signed bytes depecting color increase/decrease, 6 bytes
