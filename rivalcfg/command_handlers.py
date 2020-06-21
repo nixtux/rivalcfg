@@ -179,12 +179,16 @@ def rival700_colorshift_handler(command, colors, positions, speed):
         stage.append(00)
 
         pos = int(positions[i]) - last_pos
+
         time = int((speed / 100) * pos)
         last_pos = int(positions[i])
+        if time == 0:
+            raise ValueError("Incompatble times set, please set different timings")
 
         index = 0
         for rgb in colors[i]:
             diff = rgb - oldcolor[index]
+            #divzer0 check needed
             ramp = int(diff / time * 16)
             oldcolor[index] = rgb
             stage = helpers.merge_bytes(stage, ramp & 255)
