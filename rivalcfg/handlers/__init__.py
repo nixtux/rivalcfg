@@ -1,5 +1,6 @@
 from . import choice
 from . import range
+from . import command_data
 from . import rgbcolor
 from . import rgbgradient
 from . import multidpi_range

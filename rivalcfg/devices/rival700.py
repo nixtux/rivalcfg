@@ -142,6 +142,33 @@ profile = {
             "report_type": usbhid.HID_REPORT_TYPE_OUTPUT,
             "value_type": "tactile_button_map",
         },
+
+        "send_tactile_feedback": {
+            "description": "Sends tactile feedback to mouse",
+            "cli": None,
+            "command": [0x59, 0x01, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_OUTPUT,
+            "stream_len": 1,
+            "value_type": "command_data",
+        },
+
+        "send_oled_frame": {
+            "description": "Set image to oled screen",
+            "cli": None,
+            "command": [0x50, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_FEATURE,
+            "stream_len": 576,
+            "value_type": "command_data",
+        },
+
+        "save_oled_frame": {
+            "description": "Saves image to mouse memory and displays on screen", # noqa
+            "cli": None,
+            "command": [0x50, 0x00],
+            "report_type": usbhid.HID_REPORT_TYPE_FEATURE,
+            "steam_len": 576,
+            "value_type": "command_data",
+        },
     },
 
     "save_command": {
