@@ -142,7 +142,7 @@ def add_cli_option(cli_parser, setting_name, setting_info):
     description = setting_info["description"] + (
                  ", Buttons 1-7 are avilable for mapping, to clear a"
                  " setting use feedback type none, syntax: "
-                 "tactile(button1=softpulse; button2=lightbump)")
+                 "tactile(button1=strongclick; button2=shortdoubleclick)")
 
     cli_parser.add_argument(
             *setting_info["cli"],

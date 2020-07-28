@@ -223,7 +223,6 @@ def process_value(setting_info, colors):
 
     padding = [0] * (color_field_length - len(header))
     header = merge_bytes(header, padding)
-    duration = uint_to_little_endian_bytearray(duration, duration_length)
 
     # Split start color into high low nibbles
     split_color = []
@@ -235,13 +234,15 @@ def process_value(setting_info, colors):
         split_color.append(right_byte)
 
     end_suffix = [0xff, 0x00]
+    # Need to fully test these values
     focal_x = uint_to_little_endian_bytearray(1500, 2)
     focal_y = uint_to_little_endian_bytearray(650, 2)
-    focals = merge_bytes(focal_x, focal_y)
     end_suffix2 = [0x00, 0x00, 0x00, 0x00, 0x01, 0x00]
+    # Amount of colors in gradient (command still work if value is incorrect)
     num_color = uint_to_little_endian_bytearray(gradient_length - 1, 2)
-    suffix = merge_bytes(split_color, end_suffix, focals, end_suffix2,
-                         num_color, duration)
+    duration = uint_to_little_endian_bytearray(duration, duration_length)
+    suffix = merge_bytes(split_color, end_suffix, focal_x, focal_y, 
+                         end_suffix2, num_color, duration)
 
     return merge_bytes(header, suffix)
 

@@ -251,10 +251,8 @@ def is_trigger(string):
     (False, "... It must looks like 'trigger(<PARAMS>)'...")
     >>> is_trigger("trigger(duration=1000)")
     (False, "... You must provide at least one color: ...")
-    >>> is_trigger("trigger(colors=red)")
-    (False, "invalid color trigger...")
-    >>> is_trigger("trigger(colors=0:red; foo=bar)")
-    (False, "unknown parameter 'foo'...")
+    >>> is_trigger("trigger(colors=red, foo=bar)")
+    (False, "invalid parameter string 'trigger(colors=red, foo=bar)'")
     """
     try:
         trigger_dict = parse_param_string(string, value_parsers={
